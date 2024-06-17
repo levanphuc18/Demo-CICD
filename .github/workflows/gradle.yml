@@ -1,11 +1,6 @@
-name: Syntax Check
+name: Super-Linter
 
-on:
-  push:
-    branches:
-      - dev   # Chỉ kích hoạt khi push lên nhánh phuc
-    paths:
-      - '**.py'  # Đổi lại thành đuôi file mà bạn cần
+on: push
 
 jobs:
   super-lint:
@@ -18,7 +13,5 @@ jobs:
       - name: Run Super-Linter
         uses: github/super-linter@v4
         env:
-          DEFAULT_BRANCH: dev
+          DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: '**.py'  # Đổi lại thành đuôi file mà bạn cần
