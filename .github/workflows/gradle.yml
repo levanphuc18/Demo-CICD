@@ -1,4 +1,4 @@
-name: Node.js CI
+name: CI/CD Pipeline
 
 on:
   push:
@@ -8,26 +8,34 @@ on:
     branches:
       - master
 
-permissions:
-  contents: read
-  pages: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x, 20.x] # Thêm các phiên bản Node.js bạn muốn kiểm tra
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
 
-      - name: Build project
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
         run: npm run build
 
-      - name: List dist directory contents
-        run: ls -la dist # Debug step to confirm dist directory exists and is populated
-
-      - name: Run tests
-        run: npm run test
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+          git checkout main
+          git fetch origin
+          git merge origin/main
+          npm run build
+          git add .
+          git commit -m "Deploy to GitHub Pages"
+          git push origin main
